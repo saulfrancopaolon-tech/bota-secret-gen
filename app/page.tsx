@@ -12,8 +12,7 @@ import {
   ChevronRight,
   Database,
   History,
-  Trash2,
-  CopyAll
+  Trash2
 } from "lucide-react"
 
 export default function BotaGeneratorPro() {
@@ -24,7 +23,7 @@ export default function BotaGeneratorPro() {
   const [copiedAll, setCopiedAll] = useState(false)
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle')
 
-  // ⚠️ REEMPLAZA ESTA URL CON LA DE TU GOOGLE APPS SCRIPT
+  // URL DE TU GOOGLE APPS SCRIPT
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwf8QjtB996ZjFQEpAkR6au-AmakyMEV4SDzEPefW5KGY7beCQd_CpigmgTD6S-w7qCwA/exec"
 
   const generateCodes = () => {
@@ -133,7 +132,7 @@ export default function BotaGeneratorPro() {
         <div className="space-y-4">
           <div className="flex items-center justify-between px-2">
             <h3 className="text-[11px] font-black text-zinc-500 uppercase tracking-[0.25em] flex items-center gap-2">
-              <History className="h-4 w-4" /> Códigos Generadas
+              <History className="h-4 w-4" /> Códigos Generados
             </h3>
             <div className="flex gap-2">
               {generatedCodes.length > 1 && (
