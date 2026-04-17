@@ -12,6 +12,10 @@
     "react": "latest",
     "react-dom": "latest",
     "lucide-react": "latest",
-    "framer-motion": "latest"
+    "framer-motion": "latest",
+    "typescript": "latest",
+    "@types/react": "latest",
+    "@types/node": "latest",
+    "@types/react-dom": "latest"
   }
 }
