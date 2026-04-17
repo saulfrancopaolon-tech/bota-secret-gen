@@ -11,7 +11,8 @@ import {
   Loader2, 
   ChevronRight,
   Database,
-  History
+  History,
+  Trash2
 } from "lucide-react"
 
 export default function BotaGeneratorPro() {
@@ -21,15 +22,21 @@ export default function BotaGeneratorPro() {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle')
 
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwf8QjtB996ZjFQEpAkR6au-AmakyMEV4SDzEPefW5KGY7beCQd_CpigmgTD6S-w7qCwA/exec" // Asegúrate de pegar tu URL
+  // ⚠️ REEMPLAZA ESTA URL CON LA DE TU GOOGLE APPS SCRIPT
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwf8QjtB996ZjFQEpAkR6au-AmakyMEV4SDzEPefW5KGY7beCQd_CpigmgTD6S-w7qCwA/exec"
 
   const generateCodes = () => {
-    // Respuesta táctil visual
-    window.navigator.vibrate?.(10) 
+    // Respuesta táctil para dispositivos móviles
+    if (typeof window !== 'undefined' && window.navigator.vibrate) {
+      window.navigator.vibrate(10)
+    }
+
     const newCodes = Array.from({ length: quantity }).map(() => {
-      const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase()
+      // Usamos 8 caracteres para asegurar una unicidad total (Entropía industrial)
+      const randomStr = Math.random().toString(36).substring(2, 10).toUpperCase()
       return `BOTA-${randomStr}`
     })
+    
     setGeneratedCodes(newCodes)
     setStatus('idle')
   }
@@ -49,6 +56,7 @@ export default function BotaGeneratorPro() {
         setTimeout(() => setStatus('idle'), 3000)
       }
     } catch (error) {
+      console.error("Error de sincronización:", error)
       setStatus('error')
     } finally {
       setIsSaving(false)
@@ -58,45 +66,47 @@ export default function BotaGeneratorPro() {
   const copyToClipboard = (code: string, index: number) => {
     navigator.clipboard.writeText(code)
     setCopiedIndex(index)
-    window.navigator.vibrate?.(5)
+    if (typeof window !== 'undefined' && window.navigator.vibrate) {
+      window.navigator.vibrate(5)
+    }
     setTimeout(() => setCopiedIndex(null), 2000)
   }
 
   return (
-    <main className="min-h-screen bg-black text-white font-sans selection:bg-orange-500/30 overflow-hidden flex flex-col">
+    <main className="min-h-screen bg-black text-white font-sans selection:bg-orange-500/30 flex flex-col antialiased">
       
-      {/* iOS Status Bar Spacer */}
-      <div className="h-12 w-full bg-black sticky top-0 z-50 backdrop-blur-md bg-black/80" />
+      {/* iOS Spacer */}
+      <div className="h-12 w-full bg-black sticky top-0 z-50" />
 
-      {/* Header Estilo Apple Industrial */}
-      <header className="px-6 py-4 flex items-center justify-between sticky top-12 z-50 bg-black/80 backdrop-blur-md border-b border-white/5">
+      {/* Navbar Industrial */}
+      <header className="px-6 py-5 flex items-center justify-between sticky top-12 z-50 bg-black/90 backdrop-blur-xl border-b border-white/5">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-orange-600 rounded-lg flex items-center justify-center shadow-[0_0_20px_rgba(234,88,12,0.3)]">
+          <div className="w-9 h-9 bg-orange-600 rounded-xl flex items-center justify-center shadow-[0_0_25px_rgba(234,88,12,0.4)]">
             <Zap className="h-5 w-5 text-white fill-current" />
           </div>
           <div>
-            <h1 className="text-lg font-black tracking-tighter uppercase italic">Bota-Gen</h1>
-            <p className="text-[8px] font-bold text-zinc-500 tracking-[0.3em] uppercase">Control de Emisiones</p>
+            <h1 className="text-xl font-black tracking-tighter uppercase italic leading-none">Bota-Gen</h1>
+            <p className="text-[9px] font-bold text-zinc-500 tracking-[0.2em] uppercase mt-1">Control de Emisiones</p>
           </div>
         </div>
-        <div className="flex flex-col items-end">
-           <span className="text-[10px] font-black text-green-500 uppercase flex items-center gap-1">
-             <span className="w-1 h-1 rounded-full bg-green-500 animate-pulse" /> Live
+        <div className="px-3 py-1 bg-green-500/10 border border-green-500/20 rounded-full">
+           <span className="text-[10px] font-black text-green-500 uppercase flex items-center gap-1.5">
+             <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" /> Online
            </span>
         </div>
       </header>
 
-      <div className="flex-1 overflow-y-auto px-6 pt-8 pb-32 space-y-10">
+      <div className="flex-1 px-6 pt-8 pb-32 space-y-10 overflow-y-auto">
         
-        {/* Selector de Cantidad - Optimizado para pulgar */}
+        {/* Input de Cantidad con respuesta táctil */}
         <section className="space-y-4">
-          <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Cantidad a generar</label>
-          <div className="flex items-center justify-between bg-zinc-900/50 border border-white/5 rounded-[2rem] p-2 h-20">
+          <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Volumen de emisión</label>
+          <div className="flex items-center justify-between bg-zinc-900/40 border border-white/10 rounded-[2.5rem] p-2 h-24">
             <button 
               onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              className="w-16 h-16 flex items-center justify-center rounded-full bg-zinc-800 active:scale-90 transition-transform"
+              className="w-20 h-full flex items-center justify-center rounded-full bg-zinc-800/80 active:scale-90 transition-transform"
             >
-              <Minus className="h-6 w-6 text-white" />
+              <Minus className="h-7 w-7 text-white" />
             </button>
             
             <input 
@@ -104,88 +114,93 @@ export default function BotaGeneratorPro() {
               inputMode="numeric"
               value={quantity}
               onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
-              className="bg-transparent text-4xl font-black text-center w-20 outline-none"
+              className="bg-transparent text-5xl font-black text-center w-24 outline-none border-none focus:ring-0"
             />
 
             <button 
-              onClick={() => setQuantity(Math.min(50, quantity + 1))}
-              className="w-16 h-16 flex items-center justify-center rounded-full bg-zinc-800 active:scale-90 transition-transform"
+              onClick={() => setQuantity(Math.min(99, quantity + 1))}
+              className="w-20 h-full flex items-center justify-center rounded-full bg-zinc-800/80 active:scale-90 transition-transform"
             >
-              <Plus className="h-6 w-6 text-white" />
+              <Plus className="h-7 w-7 text-white" />
             </button>
           </div>
         </section>
 
-        {/* Botón de Acción Principal */}
+        {/* Acciones de Control */}
         <div className="grid gap-4">
           <button 
             onClick={generateCodes}
-            className="w-full bg-white text-black h-16 rounded-2xl font-black uppercase tracking-widest text-sm shadow-[0_10px_30px_rgba(255,255,255,0.1)] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+            className="w-full bg-white text-black h-20 rounded-3xl font-black uppercase tracking-widest text-sm shadow-[0_15px_40px_rgba(255,255,255,0.15)] active:scale-[0.96] transition-all flex items-center justify-center gap-3"
           >
-            Preparar Fichas <ChevronRight className="h-4 w-4" />
+            Generar Código <ChevronRight className="h-5 w-5" />
           </button>
           
           <button 
             onClick={saveToSheet}
             disabled={generatedCodes.length === 0 || isSaving}
-            className={`w-full h-16 rounded-2xl font-black uppercase tracking-widest text-sm transition-all flex items-center justify-center gap-3 border
-              ${status === 'success' ? 'bg-green-600 border-green-500 text-white' : 
-                generatedCodes.length > 0 ? 'bg-zinc-900 border-orange-600/50 text-orange-500' : 'bg-zinc-900/30 border-white/5 text-zinc-700'}
+            className={`w-full h-20 rounded-3xl font-black uppercase tracking-widest text-sm transition-all flex items-center justify-center gap-3 border-2
+              ${status === 'success' ? 'bg-green-600 border-green-400 text-white' : 
+                generatedCodes.length > 0 ? 'bg-transparent border-orange-600/60 text-orange-500' : 'bg-transparent border-white/5 text-zinc-800'}
             `}
           >
-            {isSaving ? <Loader2 className="h-5 w-5 animate-spin" /> : 
-             status === 'success' ? <><Check className="h-5 w-5" /> Sincronizado</> : 
-             <><Database className="h-5 w-5" /> Sincronizar Excel</>}
+            {isSaving ? <Loader2 className="h-6 w-6 animate-spin" /> : 
+             status === 'success' ? <><Check className="h-6 w-6" /> Sincronizado</> : 
+             <><Database className="h-6 w-6" /> Sincronizar Excel</>}
           </button>
         </div>
 
-        {/* Lista de Códigos - Diseño de Tarjetas */}
-        <div className="space-y-3">
+        {/* Lista de Fichas Generadas */}
+        <div className="space-y-4">
           <div className="flex items-center justify-between px-2">
-            <h3 className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2">
-              <History className="h-3 w-3" /> Fichas en cola
+            <h3 className="text-[11px] font-black text-zinc-500 uppercase tracking-[0.25em] flex items-center gap-2">
+              <History className="h-4 w-4" /> Historial Reciente
             </h3>
             {generatedCodes.length > 0 && (
-               <button onClick={() => setGeneratedCodes([])} className="text-[10px] font-black text-red-500 uppercase">Borrar</button>
+               <button onClick={() => setGeneratedCodes([])} className="p-2 text-zinc-600 active:text-red-500 transition-colors">
+                 <Trash2 className="h-4 w-4" />
+               </button>
             )}
           </div>
 
-          <AnimatePresence>
-            {generatedCodes.map((code, i) => (
-              <motion.div 
-                key={i}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.05 }}
-                onClick={() => copyToClipboard(code, i)}
-                className={`flex items-center justify-between p-5 rounded-[1.5rem] border transition-all active:scale-[0.97]
-                  ${copiedIndex === i ? 'bg-orange-600/20 border-orange-600' : 'bg-zinc-900/50 border-white/5'}
-                `}
-              >
-                <div className="space-y-1">
-                  <span className="block text-[8px] font-black text-zinc-500 uppercase tracking-widest">Código</span>
-                  <span className="font-mono text-xl font-bold tracking-[0.15em]">{code}</span>
-                </div>
-                <div className={`p-3 rounded-xl ${copiedIndex === i ? 'bg-orange-600 text-white' : 'bg-white/5 text-zinc-500'}`}>
-                  {copiedIndex === i ? <Check className="h-5 w-5" /> : <Copy className="h-5 w-5" />}
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
+          <div className="grid gap-3">
+            <AnimatePresence mode="popLayout">
+              {generatedCodes.map((code, i) => (
+                <motion.div 
+                  key={code + i}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  onClick={() => copyToClipboard(code, i)}
+                  className={`flex items-center justify-between p-6 rounded-[2rem] border-2 transition-all active:scale-[0.95]
+                    ${copiedIndex === i ? 'bg-orange-600/10 border-orange-500 shadow-[0_0_30px_rgba(234,88,12,0.1)]' : 'bg-zinc-900/30 border-white/5'}
+                  `}
+                >
+                  <div className="space-y-1.5">
+                    <span className="block text-[9px] font-black text-zinc-600 uppercase tracking-widest">Ficha de Canje</span>
+                    <span className="font-mono text-2xl font-bold tracking-[0.2em] text-zinc-100">{code}</span>
+                  </div>
+                  <div className={`p-4 rounded-2xl transition-all ${copiedIndex === i ? 'bg-orange-600 text-white' : 'bg-zinc-800 text-zinc-500'}`}>
+                    {copiedIndex === i ? <Check className="h-6 w-6" /> : <Copy className="h-6 w-6" />}
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
 
-          {generatedCodes.length === 0 && (
-            <div className="py-20 text-center border-2 border-dashed border-white/5 rounded-[2.5rem]">
-              <p className="text-zinc-700 text-[10px] font-black uppercase tracking-[0.3em]">Esperando generación...</p>
-            </div>
-          )}
+            {generatedCodes.length === 0 && (
+              <div className="py-24 text-center border-2 border-dashed border-white/5 rounded-[3rem] flex flex-col items-center gap-4">
+                <div className="p-4 bg-zinc-900/50 rounded-full text-zinc-700">
+                  <Zap className="h-8 w-8 opacity-20" />
+                </div>
+                <p className="text-zinc-700 text-[10px] font-black uppercase tracking-[0.4em]">Sin fichas activas</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Footer Fijo con Branding */}
-      <footer className="fixed bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black via-black to-transparent pointer-events-none">
-        <div className="text-center opacity-30">
-          <p className="text-[8px] font-black uppercase tracking-[0.8em] text-white">Bota-Na Industrial</p>
-        </div>
+      {/* Footer Branding */}
+      <footer className="p-10 text-center pointer-events-none pb-12">
+        <p className="text-[9px] font-black uppercase tracking-[1em] text-white/20">Bota-Na Industrial © 2026</p>
       </footer>
     </main>
   )
